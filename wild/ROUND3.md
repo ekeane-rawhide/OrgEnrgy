@@ -149,3 +149,85 @@ instrument's failure mode was wrong on first attempt.
 ranks severity correctly (3/3), but its absolute scale is uncalibrated,
 it misses baseline-rigging entirely, and it failed the bar I set for
 it.**
+
+---
+
+# H5 ADVERSARY VERDICT — **KILLED(rigged)**
+
+Independently verified before acceptance. The decisive finding:
+
+```
+SHIPPED windows:
+  T6d (true SEVERE)  [0.10,0.25,0.50,1.00]  S=0.8182
+  H4  (true VACUOUS) [0.0, 1e-4]            S=0.0065
+
+ALTERNATIVE, equally defensible windows:
+  T6d (true SEVERE)  [0.9, 1.0, 1.1]        S=0.0990
+  H4  (true VACUOUS) [0.0, 0.01]            S=0.1454
+
+ORDERING INVERTED: vacuous 0.1454 > severe 0.0990
+```
+
+**My rescue argument is dead.** I claimed that although the absolute
+threshold failed, "the instrument's *ordering* reproduced the
+adversarial labels exactly." It does not. The ordering inverts under
+different but equally defensible sweep windows — a known-vacuous test
+outscores a known-severe one. The clean 0.306 separation was never a
+property of S; it was **a property of the eight numbers I happened to
+type into six function bodies.**
+
+The line that lands hardest, and is correct:
+
+> "The paper never swept the sweep, i.e. it never asked S of itself."
+
+**H5 fails its own test.** An instrument for detecting verdicts fixed by
+construction had its own headline verdict fixed by construction — one
+run, one hand-picked set of sweep points per case, no sensitivity check
+of the sensitivity index. This is the same error a fifth time, now
+committed *inside the tool built to catch it*.
+
+Two further defects, both correct:
+1. **`case_h1_fanout`'s S=0 is analytically guaranteed, not measured.**
+   `test_c3_no_fanout` never calls `Substrate.clone`; its return value
+   is a tautology. The swept variable never touches the measured code
+   path, so that row could not have come out otherwise — it is a
+   vacuous test *of* vacuity, inside the vacuity detector.
+2. **The harness's AMBIGUOUS band spans 45% of the unit interval**
+   against binary ground truth, so a misclassification was close to
+   guaranteed by scoring design rather than by measurement.
+
+**Reduction** (as pre-registered): OAT range / elementary-effect
+sensitivity index, Morris-screening family — a class where exactly this
+window-dependence is textbook-documented. Not Sobol (no variance
+decomposition), not properly Mayo severity (no probability model over a
+reference class).
+
+**One thing survives.** `case_t4_p1` is robust: S stays at ~1e-16 to
+2e-5 for every I_cap from 0.05 to 1.0. The taper really is inert there
+regardless of window. That is a genuine finding about T4, independent of
+range choice — and the *only* row in the table that is.
+
+## Meta-experiment: third consecutive relocation confirmed
+
+Round 1 → algebra. Round 2 → pattern formation (predicted). Round 3 →
+methodology / OAT sensitivity analysis (predicted). Three rounds, three
+distinct prior-art families, each named in advance. **"Generate
+differently" is confirmed as a controllable variable** — it reliably
+moves the search into a new region. It has not once produced a region
+that was unoccupied.
+
+**Foundry standing: 0 for 5.**
+
+## The finding this round actually produced
+
+Not an instrument. A correction to my own diagnosis. I had written that
+my recurring error was "pre-registering thresholds tighter than the
+measurement supports." The adversary showed that undersells it:
+
+> **The measurement itself is not stable enough to support *any*
+> threshold, tight or loose, without first specifying and defending a
+> canonical perturbation range — which the pre-registration never did.**
+
+The failure was never in the constants. It was in believing a number was
+a measurement before checking whether it was stable under choices I had
+made without noticing I was making them.
