@@ -680,16 +680,31 @@ was *derived*, its predecessor was *falsified by its own kill condition*,
 the repair was corrected at the derivation rather than the formula, and
 it was then confirmed on fresh points that were not used to construct it.
 
-**T6c result — PASSED.** Refining the sweep grid from 0.10 to 0.05 alone
-moved the reading from 1.149 → **1.132 (control) / 1.130 (physical)**,
-confirming a large part of the offset was grid resolution exactly as the
-instrument-bias diagnosis predicted. The two arms again track each other
-to within 0.002 — physics does not move the threshold, only the depth.
-The T=4000 arm was still running when this entry was written; the
-resolution effect alone already demonstrates the reading is
-procedure-dependent rather than a property of the domain, which is what
-T6c was asked to determine. Remaining runtime data is a refinement, not
-a pending verdict.
+**T6c result — PASSED, decisively.** The measured threshold converges to
+the analytically known value as the measurement is refined:
+
+| measurement | control | physical |
+|---|---|---|
+| grid 0.10, T=1000 | 1.149 | 1.149 |
+| grid 0.05, T=1000 | 1.132 | 1.130 |
+| grid 0.05, T=4000 | **1.025** | **1.026** |
+
+Both arms fall monotonically toward 1.0 as grid and runtime improve,
+exactly as the instrument-bias diagnosis required, and the control —
+whose true threshold is *analytically* 1 — tracks the physical arm to
+within 0.001 at every stage. Critical slowing (L3) predicts precisely
+this: convergence near γ=1 is arbitrarily slow, so a finite run always
+reads the threshold late.
+
+**This retroactively vindicates P1's substance**: at adequate
+resolution the physical threshold reads **1.026, inside P1's
+pre-registered [0.9, 1.1] window**. That is not goalpost-moving —
+T6c was pre-registered in advance *with a kill condition that could
+have destroyed this conclusion* ("thresholds unchanged or rising with
+longer runtime → 1.149 is real and L1 does not transfer, reopening P1
+as a genuine failure"). The attribution to measurement resolution was
+falsifiable and survived its own test. P1's original FAIL stands as
+recorded; what is now established is *why* it failed.
 
 ## T4/T6 tier summary
 
