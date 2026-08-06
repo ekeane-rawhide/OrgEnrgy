@@ -596,6 +596,63 @@ that would mean 1.149 is a genuine property of the system and L1 does
 not transfer, reopening P1 as a real failure rather than an instrument
 artifact.
 
-**Result:** _pending._
+**T6b result — FAILED (falsified as written).**
+
+| I_cap | predicted (1+I_cap)/I_cap | measured | rel err |
+|---|---|---|---|
+| 0.10 | 11.00 | 11.00 | 0.0% |
+| 0.25 | 5.00 | 5.00 | 0.0% |
+| 0.50 | 3.00 | 3.00 | 0.0% |
+| 1.00 | 2.00 | 2.00 | 0.0% |
+| 2.00 | 1.50 | **1.80** | **20.0%** |
+
+Four points exact to the displayed precision, one point off by 20% —
+over the 5% kill bar, so the law as stated is **falsified**. Recorded as
+a failure.
+
+Diagnosis (and note *where* it broke): the four exact points are
+precisely those where (1+I_cap)/I_cap is an **integer** (11, 5, 3, 2).
+The failure is at I_cap=2.0, the only tested value where it is not
+(1.5). My derivation implicitly assumed the locked state is composed of
+k identical cells each absorbing A = I_cap/(1+I_cap) with k = 1/A —
+which is only coherent when 1/A is a whole number. Cells are discrete;
+you cannot have 1.5 of them.
+
+## T6d pre-registration — discreteness-corrected floor law (repair #1)
+
+Correcting the derivation rather than the formula: at the locked state,
+k = floor(1/A) cells saturate at absorption A, and the remainder
+r = 1 − k·A goes to one further cell. Since weights are proportional to
+absorbed current, shares are k copies of A plus one of r, giving
+
+    **N_eff_floor = 1 / (k·A² + r²),  A = I_cap/(1+I_cap),
+                    k = floor(1/A),   r = 1 − k·A**
+
+This reduces exactly to the old law when 1/A is an integer (r=0), which
+is why those four points matched. Checking it against the datum that
+falsified the old law: I_cap=2 → A=2/3, k=1, r=1/3 →
+N_eff = 1/(4/9 + 1/9) = **1.80**, the measured value exactly.
+
+That retrodiction is *not* evidence — it is the datum the repair was
+built from, and the handoff's retrodiction warning applies in full. The
+test is therefore on **five fresh I_cap values never simulated**, chosen
+to span both integer and non-integer cases so the law must predict its
+own successes *and* its own former failure mode:
+
+| I_cap | k | r | predicted N_eff |
+|---|---|---|---|
+| 0.20 | 6 | 0 | 6.000 |
+| 0.40 | 3 | 1/7 | 3.769 |
+| 0.75 | 2 | 1/7 | 2.579 |
+| 1.50 | 1 | 0.4 | 1.923 |
+| 3.00 | 1 | 0.25 | 1.600 |
+
+**Kill condition:** any of the five deviating by more than 2% falsifies
+the repair. Under the carried stopping rule, a second failed repair on
+this tier ends work on the floor law entirely — no third attempt.
+
+**T6d result:** _pending._
+
+**T6c result:** _pending (running)._
 
 ---
