@@ -920,4 +920,73 @@ must not regress beyond its existing 0.10 tolerance.
 **Kill:** any of the three unmet. Under the carried stopping rule a
 second failed repair ends work on the estimator, no third attempt.
 
-**T7b result:** _pending._
+**T7b result — FAILED.** Compositional weighting did not fix the
+problem, it *moved* it: P2 worst error went 0.739 → 1.016, with the
+error minimum sliding from γ=1.0 to γ=1.4 (the curve inverted rather
+than flattening). P4 spread barely improved, 1.943 → 1.621. Repair #1
+falsified.
+
+## T7c pre-registration — integral formulation (repair #2, final under the rule)
+
+Diagnosis of what T7b got wrong: the problem was never the weighting.
+It is that the pipeline **differentiates noisy data** (`np.gradient` on
+a 5%-noise series), and finite differencing is a textbook noise
+amplifier. The standard treatment for ODE parameter estimation from
+noisy series is to integrate rather than differentiate:
+
+    C_i(b) − C_i(a) = αF·∫p_i dt − β·∫C_i dt
+    S(b) − S(a)     = αF·(b−a) − β·∫S dt   → 2-parameter linear solve
+
+No derivatives anywhere. Derived from the identified failure mechanism,
+not tuned to the answer.
+
+**Predictions:** P2 ≤ 0.20, P4 < 0.15, P1 not regressed.
+**Kill:** any unmet → second failed repair → **halt work on the
+estimator**, per the carried rule.
+
+**T7c result — FAILED, and work is halted.**
+
+```
+P1  worst error 0.001   PASS  (improved: 0.024 -> 0.014 -> 0.001, now exact)
+P2  worst error 0.538   FAIL  (best of the three: 0.739 -> 1.016 -> 0.538)
+P3  kernel id both ways PASS
+P4  worst spread 1.610  FAIL  (1.943 -> 1.621 -> 1.610, essentially immovable)
+```
+
+The integral form is unambiguously the best estimator of the three — it
+recovers γ exactly from clean data and more than halved the noise error
+— but it does not reach the pre-registered bars. **Two repairs have now
+failed. Halting, no third attempt.**
+
+## T7 verdict and the finding
+
+**What works, and is usable today:** given clean or low-noise
+trajectories, γ is recovered essentially exactly (error 0.001 across
+γ ∈ [0.4, 1.8]) with α, β and F all unknown — they fall out of the
+aggregate identity for free. The threshold-free kernel test correctly
+distinguishes power-law from exponential routing in both directions,
+which also means **L6's warning is now operational**: the estimator
+tells you whether the power-law model applies at all before it hands
+you a γ.
+
+**What does not work:** 5% observation noise, and the concentrating
+regime (γ ≳ 1.2) specifically. P4's instability is localized — spread
+0.060 at γ=0.6 and 0.000 at γ=1.0, both fine, versus 1.61 at γ=1.4.
+
+**Conjecture for whoever continues this (UNTESTED — do not cite):** the
+high-γ failure may not be an algorithmic defect at all but an
+**identifiability limit**. In the concentrated phase nearly every
+channel sits at vanishing share, so the observed data carries almost no
+information about the exponent governing how share responds to
+strength — there is nothing left to differentiate. Two independent,
+principled repairs failed to move P4, which is weak evidence for
+"information absent" over "method inadequate." The way to settle it is a
+Fisher-information calculation for γ as a function of the occupancy
+distribution, which would either exhibit the collapse or refute the
+conjecture. That is the next experiment, and it is cheap.
+
+**Status of handoff §5C:** the blocker is **confirmed and now
+quantified** rather than removed. An estimator exists and is exact in
+the clean, distributed regime; it is not yet usable on noisy data from a
+concentrating system — which is, inconveniently, the regime where the
+concentration question actually matters.

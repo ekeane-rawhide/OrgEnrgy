@@ -20,6 +20,8 @@ Pre-registered in LEDGER.md (section T7) before this file existed.
 import numpy as np
 
 ALPHA, F_DRIVE, BETA_TRUE = 1.0, 1.0, 0.1
+WEIGHTED = True   # T7b repair #1: compositional (share-magnitude) weighting
+USE_INTEGRAL = True  # T7c repair #2: integral form, no differentiation
 
 
 def generate(gamma, N=25, T=60.0, dt=0.01, sample_every=20, kernel="power",
@@ -47,17 +49,23 @@ def generate(gamma, N=25, T=60.0, dt=0.01, sample_every=20, kernel="power",
     return times, traj
 
 
-def _r2(x, y):
-    """R^2 of a through-origin fit y = m x (data already centered)."""
-    denom = np.sum(x * x)
+def _r2(x, y, w=None):
+    """Weighted R^2 of a through-origin fit y = m x (data pre-centered).
+
+    Routing shares are compositional data whose log-residual variance
+    scales roughly as 1/p, so w=p is the quasi-likelihood weighting for
+    share data -- derived from the data type, not from the answer."""
+    if w is None:
+        w = np.ones_like(x)
+    denom = np.sum(w * x * x)
     if denom < 1e-30:
         return np.nan, np.nan
-    m = np.sum(x * y) / denom
+    m = np.sum(w * x * y) / denom
     resid = y - m * x
-    ss_tot = np.sum(y * y)
+    ss_tot = np.sum(w * y * y)
     if ss_tot < 1e-30:
         return m, np.nan
-    return m, 1.0 - np.sum(resid ** 2) / ss_tot
+    return m, 1.0 - np.sum(w * resid ** 2) / ss_tot
 
 
 def estimate(times, traj, channels=None):
@@ -78,7 +86,7 @@ def estimate(times, traj, channels=None):
     p = (dC + beta_hat * traj) / drive_hat
 
     # centered-per-timepoint regressors kill the time-varying intercept
-    xs_pow, xs_exp, ys = [], [], []
+    xs_pow, xs_exp, ys, ws = [], [], [], []
     for t in range(len(times)):
         good = (p[t] > 1e-12) & (traj[t] > 1e-12)
         if good.sum() < 3:
@@ -89,13 +97,77 @@ def estimate(times, traj, channels=None):
         ys.append(lp - lp.mean())
         xs_pow.append(lc - lc.mean())
         xs_exp.append(c - c.mean())
+        ws.append(p[t][good])
     if not ys:
         return dict(gamma_hat=np.nan, beta_hat=beta_hat,
                     r2_power=np.nan, r2_exp=np.nan, kernel="undetermined")
 
     y = np.concatenate(ys)
-    gamma_hat, r2_power = _r2(np.concatenate(xs_pow), y)
-    _, r2_exp = _r2(np.concatenate(xs_exp), y)
+    w = np.concatenate(ws) if WEIGHTED else None
+    gamma_hat, r2_power = _r2(np.concatenate(xs_pow), y, w)
+    _, r2_exp = _r2(np.concatenate(xs_exp), y, w)
+    kernel = "power" if (np.nan_to_num(r2_power, nan=-9) >
+                         np.nan_to_num(r2_exp, nan=-9)) else "exponential"
+    return dict(gamma_hat=gamma_hat, beta_hat=beta_hat,
+                r2_power=r2_power, r2_exp=r2_exp, kernel=kernel)
+
+
+def estimate_integral(times, traj, channels=None, block=6):
+    """T7c repair #2: INTEGRAL form -- never differentiate noisy data.
+
+    Finite differencing is the known noise amplifier here (np.gradient on
+    5%-noise data). Integrating the ODE over intervals instead is the
+    standard treatment for ODE parameter estimation from noisy series:
+
+        C_i(b) - C_i(a) = alpha*F * int_a^b p_i dt - beta * int_a^b C_i dt
+
+    Aggregate: S(b)-S(a) = alpha*F*(b-a) - beta*int S dt, a 2-parameter
+    linear solve for (alpha*F, beta) with no derivatives at all.
+    """
+    if channels is not None:
+        traj = traj[:, channels]
+    n = len(times)
+    edges = [(i, min(i + block, n - 1)) for i in range(0, n - 1, block)]
+    edges = [(a, b) for a, b in edges if b > a]
+    if len(edges) < 3:
+        return dict(gamma_hat=np.nan, beta_hat=np.nan,
+                    r2_power=np.nan, r2_exp=np.nan, kernel="undetermined")
+
+    S = traj.sum(axis=1)
+    rows, rhs = [], []
+    for a, b in edges:
+        dt_ = times[b] - times[a]
+        int_S = np.trapezoid(S[a:b + 1], times[a:b + 1])
+        rows.append([dt_, -int_S])
+        rhs.append(S[b] - S[a])
+    (drive_hat, beta_hat) = np.linalg.lstsq(np.array(rows), np.array(rhs),
+                                            rcond=None)[0]
+    if drive_hat <= 0:
+        return dict(gamma_hat=np.nan, beta_hat=beta_hat,
+                    r2_power=np.nan, r2_exp=np.nan, kernel="undetermined")
+
+    xs_pow, xs_exp, ys, ws = [], [], [], []
+    for a, b in edges:
+        dt_ = times[b] - times[a]
+        int_C = np.trapezoid(traj[a:b + 1], times[a:b + 1], axis=0)
+        pbar = (traj[b] - traj[a] + beta_hat * int_C) / (drive_hat * dt_)
+        cbar = int_C / dt_
+        good = (pbar > 1e-12) & (cbar > 1e-12)
+        if good.sum() < 3:
+            continue
+        lp, lc = np.log(pbar[good]), np.log(cbar[good])
+        ys.append(lp - lp.mean())
+        xs_pow.append(lc - lc.mean())
+        xs_exp.append(cbar[good] - cbar[good].mean())
+        ws.append(pbar[good])
+    if not ys:
+        return dict(gamma_hat=np.nan, beta_hat=beta_hat,
+                    r2_power=np.nan, r2_exp=np.nan, kernel="undetermined")
+
+    y = np.concatenate(ys)
+    w = np.concatenate(ws) if WEIGHTED else None
+    gamma_hat, r2_power = _r2(np.concatenate(xs_pow), y, w)
+    _, r2_exp = _r2(np.concatenate(xs_exp), y, w)
     kernel = "power" if (np.nan_to_num(r2_power, nan=-9) >
                          np.nan_to_num(r2_exp, nan=-9)) else "exponential"
     return dict(gamma_hat=gamma_hat, beta_hat=beta_hat,
@@ -112,14 +184,19 @@ def stability_spread(gamma, noise=0.0, seed=0):
         n = len(times)
         for lo, hi in ((0, n), (0, n // 2), (n // 4, n)):
             for chans in (None, np.arange(0, 25, 2)):
-                r = estimate(times[lo:hi], traj[lo:hi], channels=chans)
+                r = ESTIMATOR(times[lo:hi], traj[lo:hi], channels=chans)
                 if np.isfinite(r["gamma_hat"]):
                     ests.append(r["gamma_hat"])
     ests = np.array(ests)
     return ests.max() - ests.min(), ests.mean(), len(ests)
 
 
+ESTIMATOR = None  # bound below
+
 if __name__ == "__main__":
+    import sys
+    ESTIMATOR = estimate_integral if USE_INTEGRAL else estimate
+    globals()['estimate'] = ESTIMATOR
     gammas = [0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
 
     print("P1  recovery from noiseless data (tolerance +-0.10)")
