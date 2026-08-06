@@ -56,14 +56,29 @@ than a purely abstract exercise, and it sidesteps the estimator problem
 (handoff §5C) since the exponent is a design parameter, not something that
 has to be inferred from noisy real data.
 
-**Not done in this session** — scoped as the next actionable step, now
-that the domain has been chosen for a stated, checked reason rather than
-by the retrodiction pattern the handoff warned against:
-- Build the T4 simulation, pre-register the predicted threshold (γ=1,
-  N-invariant, per L1/L3, since Check B passes by construction) *before*
-  running it.
-- If it holds, this becomes the first real (not just abstract) validation
-  of the deposition/decay/routing model, satisfying the never-executed
-  handoff item A.
+**STATUS: EXECUTED.** This recommendation was carried out — see the
+"T4 — MICROGRID DOMAIN TEST" section of `LEDGER.md` for the full
+pre-registration, results, one falsification, and one repair.
+Implementation in `t6_microgrid.py`, `t6b_floor_law.py`,
+`t6d_floor_law_v2.py`.
+
+Headline outcome: the γ=1 threshold **survives** the addition of real
+charging physics (state of charge, CV acceptance taper, refused-current
+redistribution, load draw) — the physical arm and the no-physics control
+agree on the threshold to within 0.001 at every measurement resolution,
+converging to 1.026 / 1.025. Physical saturation changes only the
+*depth* of concentration, reproducing L5's signature in a system whose
+dynamics are not the abstract model's. A new exact law (**L7**) for that
+depth was derived, falsified in its first form, repaired at the
+derivation, and confirmed on five fresh parameter values at 0.00% error.
+
+Still outstanding from this note:
 - The nonlinear-PA literature connection should be checked against actual
   papers before being repeated as settled fact anywhere outside this note.
+  (Partially done: a literature search confirmed the Krapivsky/Redner
+  gelation transition at γ=1 exists as described — see the session's
+  reply on novelty — but the primary sources have still not been read
+  directly.)
+- T5, the cross-domain collapse test, remains the actual universality
+  claim and remains un-run. With the microgrid now validated, a second
+  shared-pool domain would make that test possible for the first time.
