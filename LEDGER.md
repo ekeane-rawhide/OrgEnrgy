@@ -1115,3 +1115,61 @@ Three further findings, all fair:
 needs: **true, general, correctly implemented — and not a discovery.**
 Its verdict quote is worth keeping: *"No amount of correct execution
 turns a textbook computation into a discovery."*
+
+## A1 — L7 floor law: **KILLED(identity)**, and separately falsified outside its box
+
+The claim I had been calling the session's strongest result. Both kills
+verified independently before acceptance.
+
+**Kill 1 — the 0.00% was machine precision, not agreement.** Printed at
+full precision, the T6d "errors" are ~1e-12 relative — floating-point
+noise. No 50,000-step Euler integration of a nonlinear ODE agrees with
+an independent closed form to twelve significant figures by luck. It
+happens because **the two computations are the same computation**: with
+LAM=CAP=1, the equilibrium condition soc = accepted substituted into the
+taper accepted = I_cap(1−soc) gives accepted = I_cap/(1+I_cap) — which
+is exactly `predict()`'s A. `predict()` solves in closed form the fixed
+point `run()` grinds out numerically. Given that A is forced by algebra
+and `allocate()`'s weight-proportional redistribution mechanically
+produces a greedy bin-fill (k saturated, one partial, rest excluded),
+the occupancy vector (A,…,A,r,0,…,0) is **forced by construction**, and
+N_eff = 1/(kA²+r²) is then just the definition of participation ratio
+applied to a vector already fixed by conservation. There was no step at
+which it could have come out otherwise. That is why it hit machine
+precision, and I should have read the suspiciously perfect number as the
+warning it was.
+
+**Kill 2 — false outside an unstated box.** L7 was advertised as a
+property of "N channels competing for fixed inflow with a per-channel
+acceptance cap." That statement mentions neither load rate nor taper
+shape. Varying only the load rate (verified independently):
+
+```
+LAM=0.5  measured 4.0000  L7 predicts 3.0000  ->  33.3% error
+LAM=1.0  measured 3.0000  L7 predicts 3.0000  ->   0.0%
+LAM=2.0  measured 2.7778  L7 predicts 3.0000  ->   7.4% error
+```
+
+and a quadratic taper instead of linear gives 31% error. **L7 silently
+baked LAM=CAP=1 and a linear taper into a formula presented as
+general.** Every one of these breaks is far past the 2–5% kill bars I
+set for the law myself.
+
+The reviewer's proposed generalization A = I_cap·LAM/(LAM+I_cap) is
+correct — verified at 0.00% for LAM=0.5 and LAM=2.0 — but that rescues
+the *mechanism*, not the published claim, and it remains an identity
+rather than an empirical law.
+
+Also fair: T6e silently applied a `min(floor, N)` clamp absent from the
+formula as stated, and the "fresh points" test only ever re-exercised
+the same hardcoded mechanism, so it could never have distinguished a
+general law from the closed-form solution of one toy ODE.
+
+**Accepted, no repair.** L7 is withdrawn as a law. What remains is a
+correct closed-form solution to a specific hardcoded model, which is a
+much smaller thing than what I claimed and what I defended.
+
+**Consequence for the T6e result I was proudest of:** "L7 predicted the
+adversary's own counterexample" is now much weaker than presented. Both
+prediction and counterexample live inside the same forced-identity box,
+so that agreement was structural too.
