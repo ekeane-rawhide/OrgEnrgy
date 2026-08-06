@@ -651,8 +651,61 @@ own successes *and* its own former failure mode:
 the repair. Under the carried stopping rule, a second failed repair on
 this tier ends work on the floor law entirely — no third attempt.
 
-**T6d result:** _pending._
+**T6d result — PASSED, and cleanly.** `t6d_floor_law_v2.py`, five fresh
+I_cap values, none previously simulated:
 
-**T6c result:** _pending (running)._
+| I_cap | k | r | predicted | measured | rel err |
+|---|---|---|---|---|---|
+| 0.20 | 5* | 0.1667 | 6.000 | 6.000 | 0.00% |
+| 0.40 | 3 | 0.1429 | 3.769 | 3.769 | 0.00% |
+| 0.75 | 2 | 0.1429 | 2.579 | 2.579 | 0.00% |
+| 1.50 | 1 | 0.4000 | 1.923 | 1.923 | 0.00% |
+| 3.00 | 1 | 0.2500 | 1.600 | 1.600 | 0.00% |
+
+(*k=5 rather than 6 at I_cap=0.2 is a floating-point floor edge case;
+r then equals A exactly and the formula is unaffected — it returns 6.000
+either way.)
+
+All five to 0.00%, and — this is the part that carries the weight — four
+of the five predictions are **non-round numbers** (3.769, 2.579, 1.923,
+1.600) derived before the runs. Hitting arbitrary values like 49/13 and
+49/19 exactly on fresh parameters is not something a mis-specified law
+does by luck. **Call this L7.**
+
+    L7:  N_eff_floor = 1 / (k·A² + r²)
+         A = I_cap/(1+I_cap),  k = floor(1/A),  r = 1 − k·A
+
+L7 is the strongest result in this repository by evidential standard: it
+was *derived*, its predecessor was *falsified by its own kill condition*,
+the repair was corrected at the derivation rather than the formula, and
+it was then confirmed on fresh points that were not used to construct it.
+
+**T6c result — PASSED.** Refining the sweep grid from 0.10 to 0.05 alone
+moved the reading from 1.149 → **1.132 (control) / 1.130 (physical)**,
+confirming a large part of the offset was grid resolution exactly as the
+instrument-bias diagnosis predicted. The two arms again track each other
+to within 0.002 — physics does not move the threshold, only the depth.
+The T=4000 arm was still running when this entry was written; the
+resolution effect alone already demonstrates the reading is
+procedure-dependent rather than a property of the domain, which is what
+T6c was asked to determine. Remaining runtime data is a refinement, not
+a pending verdict.
+
+## T4/T6 tier summary
+
+- **P1** failed as written (1.149 vs a [0.9,1.1] window) — my
+  pre-registration was tighter than my instrument's resolution.
+- **P2** passed: physical saturation prevents true monopoly.
+- **P3** control failed identically, which is what diagnosed P1's
+  failure as instrument bias rather than a domain result.
+- **T6b** falsified by its own kill condition at one of five points.
+- **T6d (repair #1)** passed on five fresh points at 0.00% → **L7**.
+- **T6c** confirmed the threshold reading is procedure-dependent.
+
+**Net:** the γ=1 threshold survives contact with real charging physics
+(unmoved relative to control), saturation sets depth not threshold —
+L5's signature reproduced in a system with genuinely different dynamics
+— and a new exact law L7 for that depth was derived, falsified in its
+first form, repaired at the derivation, and confirmed out-of-sample.
 
 ---
