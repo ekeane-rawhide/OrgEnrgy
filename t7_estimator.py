@@ -70,10 +70,9 @@ def _r2(x, y, w=None):
 
 def estimate(times, traj, channels=None):
     """Return dict with gamma_hat, beta_hat, and both kernels' R^2."""
+    S = traj.sum(axis=1)          # all channels -- conservation requires it
     if channels is not None:
         traj = traj[:, channels]
-
-    S = traj.sum(axis=1)
     dS = np.gradient(S, times)
     A = np.vstack([S, np.ones_like(S)]).T
     slope, intercept = np.linalg.lstsq(A, dS, rcond=None)[0]
@@ -124,6 +123,11 @@ def estimate_integral(times, traj, channels=None, block=6):
     Aggregate: S(b)-S(a) = alpha*F*(b-a) - beta*int S dt, a 2-parameter
     linear solve for (alpha*F, beta) with no derivatives at all.
     """
+    # S MUST sum over ALL channels: the aggregate identity
+    # dS/dt = alphaF - beta*S relies on sum_i p_i = 1, true only for the
+    # whole system. Subsetting before summing violates conservation and
+    # corrupts beta_hat/drive_hat. (Bug found in adversarial review.)
+    S_full = traj.sum(axis=1)
     if channels is not None:
         traj = traj[:, channels]
     n = len(times)
@@ -133,7 +137,7 @@ def estimate_integral(times, traj, channels=None, block=6):
         return dict(gamma_hat=np.nan, beta_hat=np.nan,
                     r2_power=np.nan, r2_exp=np.nan, kernel="undetermined")
 
-    S = traj.sum(axis=1)
+    S = S_full
     rows, rhs = [], []
     for a, b in edges:
         dt_ = times[b] - times[a]
