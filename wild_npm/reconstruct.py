@@ -19,14 +19,20 @@ allocation curve C_i(t).
 """
 import json
 import sys
-from crawl import full_doc
+from crawl import abbrev_doc, version_times
 from categories import CATEGORIES
 
 def dated_choice_series(pkg, competitors):
-    doc = full_doc(pkg)
-    if not doc or "versions" not in doc or "time" not in doc:
+    """Dependency choice per version comes from the already-cached
+    abbreviated doc; publish date per version comes from the separate,
+    much smaller `time`-only fetch. Combining the two avoids ever
+    caching a full raw doc."""
+    doc = abbrev_doc(pkg)
+    if not doc or "versions" not in doc:
         return None
-    times = doc["time"]
+    times = version_times(pkg)
+    if not times:
+        return None
     series = []
     for vstr, vmeta in doc["versions"].items():
         if vstr not in times:

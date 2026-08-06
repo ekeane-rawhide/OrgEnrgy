@@ -77,13 +77,19 @@ def abbrev_doc(pkg):
     time.sleep(0.1)
     return obj
 
-def full_doc(pkg):
-    cp = cache_path("full", pkg)
+def version_times(pkg):
+    """Version->publish-date map only. Fetches the full doc (the only
+    place npm exposes per-version timestamps) but caches just the small
+    `time` field, not the multi-MB raw doc -- full docs for
+    heavily-published packages ran 20-30MB each and blew the disk
+    budget when cached verbatim."""
+    cp = cache_path("times", pkg)
     if os.path.exists(cp):
         return json.load(open(cp))
     url = f"https://registry.npmjs.org/{urllib.parse.quote(pkg, safe='@/')}"
     data = _get(url)
     obj = json.loads(data) if data else None
-    json.dump(obj, open(cp, "w"))
+    times = obj.get("time", {}) if obj else {}
+    json.dump(times, open(cp, "w"))
     time.sleep(0.15)
-    return obj
+    return times

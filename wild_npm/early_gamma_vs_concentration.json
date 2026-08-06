@@ -1,0 +1,284 @@
+{
+ "0.3": {
+  "per_category": {
+   "http_client": {
+    "gamma_early": 1.0860102963673937,
+    "n_early_events": 747,
+    "cutoff": "2016-06-12",
+    "hhi": 0.22249280441114963,
+    "n_competitors_active": 10,
+    "total_slots": 367.0
+   },
+   "test_runner": {
+    "gamma_early": 1.4083024968552982,
+    "n_early_events": 137,
+    "cutoff": "2016-11-22",
+    "hhi": 0.32407407407407407,
+    "n_competitors_active": 8,
+    "total_slots": 72.0
+   },
+   "date_library": {
+    "gamma_early": 3.9996538594565756,
+    "n_early_events": 359,
+    "cutoff": "2016-12-16",
+    "hhi": 0.3013635215890918,
+    "n_competitors_active": 4,
+    "total_slots": 109.0
+   },
+   "state_management": {
+    "gamma_early": 2.1639969372893653,
+    "n_early_events": 721,
+    "cutoff": "2019-05-09",
+    "hhi": 0.28167757287328976,
+    "n_competitors_active": 7,
+    "total_slots": 41.0
+   },
+   "bundler": {
+    "gamma_early": 0.6589010091495322,
+    "n_early_events": 151,
+    "cutoff": "2016-08-14",
+    "hhi": 0.3767020408163267,
+    "n_competitors_active": 4,
+    "total_slots": 175.0
+   },
+   "promise_utils": {
+    "gamma_early": 1.1325032390208265,
+    "n_early_events": 1967,
+    "cutoff": "2017-03-23",
+    "hhi": 0.43704865536058557,
+    "n_competitors_active": 5,
+    "total_slots": 101.0
+   },
+   "logging": {
+    "gamma_early": 1.576515543612417,
+    "n_early_events": 673,
+    "cutoff": "2016-04-11",
+    "hhi": 0.30236027492141293,
+    "n_competitors_active": 5,
+    "total_slots": 137.0
+   },
+   "templating": {
+    "gamma_early": 1.2260179800185065,
+    "n_early_events": 658,
+    "cutoff": "2017-07-20",
+    "hhi": 0.2642660369933098,
+    "n_competitors_active": 6,
+    "total_slots": 77.0
+   },
+   "validation": {
+    "gamma_early": 3.199278891784216,
+    "n_early_events": 1169,
+    "cutoff": "2018-08-22",
+    "hhi": 0.43802466979163635,
+    "n_competitors_active": 6,
+    "total_slots": 321.0
+   },
+   "uuid_gen": {
+    "gamma_early": 1.7036728939615207,
+    "n_early_events": 466,
+    "cutoff": "2017-10-21",
+    "hhi": 0.6588854262850109,
+    "n_competitors_active": 5,
+    "total_slots": 228.0
+   },
+   "cli_args": {
+    "gamma_early": 0.8131435882763516,
+    "n_early_events": 986,
+    "cutoff": "2016-02-20",
+    "hhi": 0.32023879510652004,
+    "n_competitors_active": 5,
+    "total_slots": 377.99999999999994
+   }
+  },
+  "spearman_rho": 0.08181818181818179,
+  "n_categories": 11
+ },
+ "0.4": {
+  "per_category": {
+   "http_client": {
+    "gamma_early": 0.9380606699688749,
+    "n_early_events": 1702,
+    "cutoff": "2017-11-24",
+    "hhi": 0.22249280441114963,
+    "n_competitors_active": 10,
+    "total_slots": 367.0
+   },
+   "test_runner": {
+    "gamma_early": 1.0514109780837135,
+    "n_early_events": 373,
+    "cutoff": "2018-04-12",
+    "hhi": 0.32407407407407407,
+    "n_competitors_active": 8,
+    "total_slots": 72.0
+   },
+   "date_library": {
+    "gamma_early": 3.9996538594565756,
+    "n_early_events": 479,
+    "cutoff": "2018-05-03",
+    "hhi": 0.3013635215890918,
+    "n_competitors_active": 4,
+    "total_slots": 109.0
+   },
+   "state_management": {
+    "gamma_early": 2.39501466543617,
+    "n_early_events": 1225,
+    "cutoff": "2020-05-21",
+    "hhi": 0.28167757287328976,
+    "n_competitors_active": 7,
+    "total_slots": 41.0
+   },
+   "bundler": {
+    "gamma_early": 1.4426373872935707,
+    "n_early_events": 834,
+    "cutoff": "2018-01-17",
+    "hhi": 0.3767020408163267,
+    "n_competitors_active": 4,
+    "total_slots": 175.0
+   },
+   "promise_utils": {
+    "gamma_early": 1.116028074888539,
+    "n_early_events": 2795,
+    "cutoff": "2018-07-25",
+    "hhi": 0.43704865536058557,
+    "n_competitors_active": 5,
+    "total_slots": 101.0
+   },
+   "logging": {
+    "gamma_early": 1.1921109428216752,
+    "n_early_events": 971,
+    "cutoff": "2017-10-01",
+    "hhi": 0.30236027492141293,
+    "n_competitors_active": 5,
+    "total_slots": 137.0
+   },
+   "templating": {
+    "gamma_early": 1.2226575770336356,
+    "n_early_events": 959,
+    "cutoff": "2018-11-04",
+    "hhi": 0.2642660369933098,
+    "n_competitors_active": 6,
+    "total_slots": 77.0
+   },
+   "validation": {
+    "gamma_early": 2.6018797145486885,
+    "n_early_events": 1583,
+    "cutoff": "2019-10-11",
+    "hhi": 0.43802466979163635,
+    "n_competitors_active": 6,
+    "total_slots": 321.0
+   },
+   "uuid_gen": {
+    "gamma_early": 1.302100847951643,
+    "n_early_events": 1390,
+    "cutoff": "2019-01-22",
+    "hhi": 0.6588854262850109,
+    "n_competitors_active": 5,
+    "total_slots": 228.0
+   },
+   "cli_args": {
+    "gamma_early": 0.901913364115463,
+    "n_early_events": 2645,
+    "cutoff": "2017-08-18",
+    "hhi": 0.32023879510652004,
+    "n_competitors_active": 5,
+    "total_slots": 377.99999999999994
+   }
+  },
+  "spearman_rho": 0.1636363636363637,
+  "n_categories": 11
+ },
+ "0.5": {
+  "per_category": {
+   "http_client": {
+    "gamma_early": 0.9267583242365979,
+    "n_early_events": 4032,
+    "cutoff": "2019-05-07",
+    "hhi": 0.22249280441114963,
+    "n_competitors_active": 10,
+    "total_slots": 367.0
+   },
+   "test_runner": {
+    "gamma_early": 0.8847459188963266,
+    "n_early_events": 864,
+    "cutoff": "2019-09-01",
+    "hhi": 0.32407407407407407,
+    "n_competitors_active": 8,
+    "total_slots": 72.0
+   },
+   "date_library": {
+    "gamma_early": 1.4931830140187234,
+    "n_early_events": 1163,
+    "cutoff": "2019-09-18",
+    "hhi": 0.3013635215890918,
+    "n_competitors_active": 4,
+    "total_slots": 109.0
+   },
+   "state_management": {
+    "gamma_early": 0.7637180958794894,
+    "n_early_events": 2975,
+    "cutoff": "2021-06-03",
+    "hhi": 0.28167757287328976,
+    "n_competitors_active": 7,
+    "total_slots": 41.0
+   },
+   "bundler": {
+    "gamma_early": 1.5790202401144051,
+    "n_early_events": 2173,
+    "cutoff": "2019-06-21",
+    "hhi": 0.3767020408163267,
+    "n_competitors_active": 4,
+    "total_slots": 175.0
+   },
+   "promise_utils": {
+    "gamma_early": 1.201600873138813,
+    "n_early_events": 3261,
+    "cutoff": "2019-11-26",
+    "hhi": 0.43704865536058557,
+    "n_competitors_active": 5,
+    "total_slots": 101.0
+   },
+   "logging": {
+    "gamma_early": 2.0885053479937037,
+    "n_early_events": 2803,
+    "cutoff": "2019-03-24",
+    "hhi": 0.30236027492141293,
+    "n_competitors_active": 5,
+    "total_slots": 137.0
+   },
+   "templating": {
+    "gamma_early": 1.6495024364060897,
+    "n_early_events": 2059,
+    "cutoff": "2020-02-19",
+    "hhi": 0.2642660369933098,
+    "n_competitors_active": 6,
+    "total_slots": 77.0
+   },
+   "validation": {
+    "gamma_early": 1.6777077995120957,
+    "n_early_events": 2600,
+    "cutoff": "2020-11-29",
+    "hhi": 0.43802466979163635,
+    "n_competitors_active": 6,
+    "total_slots": 321.0
+   },
+   "uuid_gen": {
+    "gamma_early": 1.310042790699049,
+    "n_early_events": 3526,
+    "cutoff": "2020-04-25",
+    "hhi": 0.6588854262850109,
+    "n_competitors_active": 5,
+    "total_slots": 228.0
+   },
+   "cli_args": {
+    "gamma_early": 0.9453103316294321,
+    "n_early_events": 6599,
+    "cutoff": "2019-02-15",
+    "hhi": 0.32023879510652004,
+    "n_competitors_active": 5,
+    "total_slots": 377.99999999999994
+   }
+  },
+  "spearman_rho": 0.21818181818181814,
+  "n_categories": 11
+ }
+}
