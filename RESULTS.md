@@ -95,3 +95,36 @@ The one claim in this document supported by a large, consistent,
 adversarially-tested sample is that claim. It is a fact about the
 process, not about flow networks — which is not what anyone set out to
 find, and is the only thing here that earned its place.
+
+---
+
+## Step 0 feasibility: what real data is actually reachable
+
+Ran before any modelling, per the loop's own precondition. Result:
+
+**Blocked by this environment's network policy (403 on CONNECT):**
+- Streaming charts (Apple RSS, kworb) — the selected target. **Not doable here.**
+- `api.npmjs.org` — npm *download counts*
+- `pypistats.org` — PyPI download counts
+
+**Reachable (in the environment's proxy-bypass allowlist):**
+- `registry.npmjs.org` — full package docs, incl. **every version's timestamp
+  and dependency list** (axios: 145 dated versions, 2014→2026)
+- `registry.npmjs.org/-/v1/search` — package search
+- `pypi.org/pypi/<pkg>/json`
+
+**Consequence: download-volume flow is unavailable, so the experiment must
+change shape.** The viable substitute is **dependency adoption**: each
+dependent package allocates its dependency slot to exactly one library in
+a functional category (one HTTP client, one test runner, one date lib).
+Those allocations sum to the number of dependents — a genuinely conserved
+pool — switching between them is observable flow, and abandonment is real
+decay. Version timestamps make it a true time series, not a snapshot.
+
+This is arguably a *better* mapping than downloads: downloads are an
+unbounded count, whereas a dependency slot is exclusive and therefore
+actually conserved, which is what the model requires.
+
+**Cost:** requires crawling many dependent packages (~0.1–1 MB each) to
+reconstruct which library each depended on at each date. Not free, but
+tractable, and it is the honest next step rather than a claim.
