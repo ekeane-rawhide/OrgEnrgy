@@ -451,3 +451,151 @@ search, one rigged baseline, one vacuous test). Full accounting and
 what this measures in `wild/VERDICT.md`.
 
 ---
+
+# T4 — MICROGRID DOMAIN TEST (the never-run experiment)
+
+The original handoff's item A, never executed in three sessions.
+`DOMAIN_MAPPING.md` selected this domain because it passes both
+structural checks (shared competition pool; power-law kernel by
+construction). This is the first test of the model against something
+with physics in it rather than against itself.
+
+## Anti-vacuity statement (written first, deliberately)
+
+The adversaries killed two of my tests for being restatements of their
+own premises. So, before designing this one: **if this simulation merely
+re-implemented dC_i/dt = αF·C_i^γ/ΣC_j^γ − βC_i with variables renamed
+to "cells" and "bus", the test would be worthless** — it would
+rediscover L1 by construction, exactly the failure mode already caught
+twice. The test is only meaningful if the simulated system contains
+dynamics the abstract model does **not** have, and we ask whether the
+γ=1 threshold survives them.
+
+Physics added here that has no analogue in the abstract ODE:
+1. **State of charge** SOC_i as a second state variable per cell (the
+   abstract model has one variable per channel, not two).
+2. **Constant-voltage taper**: a cell's acceptance limit falls as
+   I_cap·(1−SOC_i) — real charging behavior. A full cell physically
+   refuses current no matter what the controller allocates.
+3. **Rejected-current redistribution**: what a saturated cell refuses is
+   re-offered to the others, weight-proportionally, over several rounds.
+4. **Load draw** proportional to stored charge, giving cells a discharge
+   path and a genuine equilibrium.
+
+Crucially, (2) creates a **feedback from physical state onto the routing
+weights** — the dominant cell fills, tapers, and therefore stops
+accruing weight. The abstract model has no such feedback. Whether γ=1
+survives it is a real question with a real answer I do not know in
+advance.
+
+## Pre-registration (written before writing the sim, and before any run)
+
+N=20 cells, β=0.05, α=1, F=1, capacity=1, load rate λ=1, I_cap=0.5.
+Weight deposit is proportional to **accepted** (not allocated) current —
+that is where the physics enters the structural dynamics.
+
+**P1 (threshold survives):** the concentration transition stays at
+γ = 1.0, measured within ±0.1, i.e. the measured 50%-transition point
+falls in [0.9, 1.1]. Reasoning: L4 established that it is a **uniform**
+flow admixture that moves the threshold (γ\*=1/(1−m)); the redistribution
+here is weight-**proportional**, not uniform, so it should inject no
+uniform component and should therefore behave like L5's cap — setting
+depth, not threshold.
+**Kill condition for P1:** measured threshold outside [0.9, 1.1]. That
+would mean a domain passing *both* structural checks in
+`DOMAIN_MAPPING.md` still fails to transfer — a mapping failure of the
+same class as ACO's, and evidence the two checks are insufficient.
+
+**P2 (saturation sets a depth floor, L5-style):** even deep in the
+monopoly regime (γ=1.6), no true monopoly forms: N_eff stays strictly
+above 1, because a monopolist cell self-consistently absorbs only
+A = I_cap/(1+I_cap) = 1/3 of total flow and the remaining 2/3 must go
+elsewhere. **Kill:** N_eff/N reaching the 1/N monopoly floor.
+
+**P3 (regression control):** with taper disabled (I_cap = ∞), the same
+harness must reproduce the abstract threshold at γ=1.0. This detects a
+buggy harness, and is explicitly *not* evidence for anything else — it
+is the vacuous version of the test, included only as a control.
+
+**Result:** `t6_microgrid.py`, γ sweep 0.6→1.6 at 0.1 resolution, 3 seeds.
+
+| γ | N_eff (control, no taper) | N_eff (physical, taper on) |
+|---|---|---|
+| 0.6–1.0 | 20.00 | 20.00 |
+| 1.10 | 19.55 | 19.55 |
+| 1.20 | 1.01 | 3.20 |
+| 1.30–1.60 | 1.00 | 3.00 |
+
+**P1 — FAILED AS WRITTEN.** Measured threshold 1.149, outside the
+pre-registered [0.9, 1.1] window. I am recording this as a failure
+because that is what the pre-registration says, and the whole point of
+writing kill conditions in advance is to be bound by them when they
+bite.
+
+**But the control failed identically — 1.149, the same number to three
+decimals.** The control contains no physics at all; it is the pure
+abstract model whose threshold is *analytically known* to be exactly 1
+(L1). So a 1.149 reading from the control is not a fact about
+microgrids — it is a measurement of my instrument's bias: a 0.1-wide
+sweep grid combined with finite runtime and critical slowing near γ=1
+(L3 predicts precisely this — near-threshold convergence gets
+arbitrarily slow, so a finite run reads the threshold late). My
+pre-registered window was tighter than the resolution of the
+measurement I chose to make. That is a design error in the
+pre-registration, not a discovery about the domain.
+
+**The substantive finding, labelled honestly as POST-HOC** (I did not
+pre-register this comparison, and it must not be counted as if I had):
+control and physical thresholds are *identical* (1.149 vs 1.149), while
+their **depths differ sharply** (floor N_eff = 1.00 vs 3.00). Adding
+real charging physics — SOC state, CV taper, refusal, redistribution,
+load draw — moved the transition point by nothing measurable and
+changed only how deep the concentration goes. That is exactly L5's
+signature (caps set depth, not threshold), now reproduced in a system
+whose dynamics are not the abstract model's.
+
+**P2 — PASSED.** Floor N_eff = 3.00, far above the monopoly floor of
+1.00. No true monopoly forms: physical saturation prevents it.
+
+**P3 — FAILED as written**, same 1.149, same reason; served its purpose
+by exposing the instrument bias rather than a harness bug.
+
+## T6b pre-registration — the exact floor law (written before running)
+
+P2's floor landed on **exactly 3.00**, and that is not arbitrary. A
+saturated cell self-consistently absorbs A = I_cap/(1+I_cap) of total
+flow (accept = I_cap·(1−SOC) with SOC = accept at load equilibrium).
+If the locked state consists of cells each pinned at that absorption,
+their number — and hence N_eff — should be the reciprocal:
+
+    **N_eff_floor = (1 + I_cap) / I_cap**
+
+At I_cap = 0.5 this gives exactly 3.00, matching the observed floor.
+This is a derivation, not a fit, so it makes sharp predictions
+elsewhere:
+
+| I_cap | predicted floor |
+|---|---|
+| 0.10 | 11.00 |
+| 0.25 | 5.00 |
+| 1.00 | 2.00 |
+| 2.00 | 1.50 |
+
+**Kill condition:** any measured floor deviating from its prediction by
+more than 5% falsifies the law. (Measured at γ=1.6, deep in the locked
+regime, 2 seeds.)
+
+## T6c pre-registration — threshold convergence (written before running)
+
+If 1.149 is finite-time critical slowing rather than a real shift, then
+lengthening the run must move the measured threshold **down toward 1.0**
+in *both* arms. Prediction: at T=4000 (4× longer) with a 0.05-resolution
+grid, both measured thresholds fall below 1.149, and the control's falls
+to ≤1.10. **Kill:** thresholds unchanged or rising with longer runtime —
+that would mean 1.149 is a genuine property of the system and L1 does
+not transfer, reopening P1 as a real failure rather than an instrument
+artifact.
+
+**Result:** _pending._
+
+---
