@@ -283,3 +283,99 @@ from the same elasticity formula but not equal to the abstract model's
 clean γ=1. See `DOMAIN_MAPPING.md`.
 
 ---
+
+# WILD HYPOTHESIS FOUNDRY (new branch of work)
+
+Maximal-novelty loop: hypotheses generated from instinct with no
+literature input, then adversarially attacked by independent subagents
+whose brief is to kill them (equivalence reduction to known work counts
+as a kill). Specs in `wild/`. Order: H2 (calibration corpse) → H1 → H3.
+H2 is *designed* to be killable — if the adversaries fail to kill it,
+the kill process is too weak and nothing else's survival means anything.
+
+## H2 pre-registration (before running h2_sim.py)
+
+Predictions: C1 (AND) and C2 (OR) implementable — PASS. C3: NOT is
+impossible because all three primitives are monotone in arrival times;
+exhaustive depth-3 search finds no NOT — PASS, establishing
+sub-universality without an inhibitory primitive.
+Adversary prediction (recorded here, NOT shown to adversaries): they
+should kill H2 as a rediscovery of race logic / temporal or spiking
+computation. Calibration gate: if no adversary lands that kill, HALT the
+foundry and report process failure.
+
+## H1 pre-registration (before running h1_sim.py)
+
+Predictions: single-use enforcement PASSES (double-spend of a consumed
+delta raises), provenance composition PASSES (δ(a,b)∘δ(b,c)=δ(a,c)),
+fan-out is IMPOSSIBLE by construction (no copy operation exists), and
+therefore any Boolean circuit needing an input twice is unimplementable →
+sub-universal.
+Adversary prediction (not shown to them): kill as groupoid composition +
+linear-logic/linear-types resource discipline.
+
+## H3 pre-registration (before running h3_sim.py)
+
+Task: next-item top-N prediction on a drifting Zipf stream (K=200 items,
+budget N=32, distribution re-permuted every 2000 steps). Predictions:
+rented-memory (decay-scored) machine beats exact-count LFU under drift
+(hit-rate gap ≥ 5 points after first drift event); approximately ties an
+EMA-scored baseline — because (recorded honestly, in advance) the closed
+form of the rented store IS an EMA of access flow, C(t) = αΣ(1−β)^(t−s),
+so the likely verdict is KILLED(reduction to decayed-frequency caching).
+Adversary prediction (not shown to them): they land exactly that
+reduction.
+
+## Foundry sim results (all three, before adversary verdicts arrived)
+
+**H2** (`wild/h2_sim.py`): C1 AND — PASS (4/4 truth-table rows).
+C2 OR — PASS (4/4). C3 — PASS: exhaustive search over all reachable
+signal pairs at depth ≤3 (73 pairs) finds no NOT circuit, consistent
+with the monotonicity argument. All three predictions confirmed.
+
+**H1** (`wild/h1_sim.py`): C1 single-use — PASS (double-read and
+double-fuse both raise substrate faults). C2 provenance — PASS
+(δ(a,b)⊕δ(b,c)⊕δ(c,d) → δ(a,d), genesis set names all 3 mint events).
+C3 no-fan-out — PASS (no operation yields two live deltas from one).
+All three predictions confirmed. Note recorded before the adversary
+reports: C1 and C3 are dangerously close to restating the axioms —
+whether they count as *tests* at all is exactly the kind of thing the
+adversary round exists to judge.
+
+**H3** (`wild/h3_sim.py`): 5 seeds, K=200, N=32, drift every 2000 steps.
+C1 — PASS: hit-rate after first drift 67.9% (rented) vs 60.2% (LFU),
+gap +7.7 points (pre-registered bar: ≥5); by the steady-drift window the
+gap widens to 67.6% vs 48.9% as LFU's stale counts compound. C2 — the
+honest self-kill CONFIRMED: max deviation between the substrate's scores
+and the closed-form EMA of access flow is 7.1e-15 (machine precision).
+The substrate is literally an exponentially-decayed frequency counter.
+Both predictions confirmed, including the one that guts the hypothesis.
+
+## H2 adversary verdict (calibration gate)
+
+**VERDICT: KILLED(reduction).** The adversary landed the predicted kill
+and then some. Named prior art, quoted from its report: diode logic
+("the canonical real-world instance of AND+OR without NOT"), **Race
+Logic** (Madhavan & Sherwood et al., ISCA 2016 — "already names,
+formalizes, and ships the exact substrate H2 claims to discover"),
+(min,+)/(max,+) tropical semiring / network calculus (Baccelli et al.),
+activation-only gene-regulatory networks, and the monotone-circuit
+theorem itself (Wegener; Razborov's monotone lower bounds).
+
+The adversary also found two things I did NOT plant:
+1. **A real internal flaw**: my spec asserts the coincidence gate is "a
+   monotone function of arrival times" in general. False — outside the
+   coincidence window the output is silence, so as a function on ℝ the
+   gate is a non-monotone bump; it is monotone only on the two-point
+   encoding domain the sim restricts to. The spec claimed a general
+   theorem and quietly discharged only a domain-restricted version.
+   Legitimate KILLED(inconsistent) grounds independent of the reduction.
+2. The "exhaustive" NOT-search is scoped (depth ≤3, two seed times) just
+   narrowly enough to always vindicate the hypothesis — a de-facto
+   confirmation-only test.
+
+**CALIBRATION GATE: PASSED.** The kill process demonstrably works at
+full strength — it found the planted kill *and* two unplanted flaws.
+H1/H3 adversary verdicts can now be taken seriously.
+
+---
