@@ -797,3 +797,127 @@ L5's signature reproduced in a system with genuinely different dynamics
 first form, repaired at the derivation, and confirmed out-of-sample.
 
 ---
+
+---
+
+# T7 — THE γ ESTIMATOR (handoff §5C, the stated real blocker)
+
+Every result in this repo assumed γ was known, because it was a knob I
+set. In any real system it must be *estimated from observed data*. There
+has never been an estimator. Building one.
+
+## The derivation (no free parameters, nothing fitted to the answer)
+
+Observables: the trajectory C_i(t) only. Nothing else is assumed known —
+not α, not β, not F.
+
+1. **Aggregate step.** S = ΣC_i obeys dS/dt = αF − βS regardless of γ
+   (the routing shares sum to 1 for any kernel). So regressing dS/dt on
+   S recovers β as −slope and αF as intercept. β and the drive come free
+   from the aggregate, without touching γ.
+2. **Invert the per-channel balance.** dC_i/dt = αF·p_i − βC_i gives
+   p_i = (dC_i/dt + βC_i)/(αF) — the realised routing share, recovered
+   from the trajectory.
+3. **Extract γ.** p_i = C_i^γ/Σ_j C_j^γ, so log p_i = γ·log C_i + c(t),
+   where c(t) is common to all channels at time t. Centering both sides
+   per time point kills c(t), and γ is the pooled slope through the
+   origin.
+
+## Anti-vacuity design (the failure mode caught 5× this session)
+
+An estimator that returns a number for any input measures nothing. So
+the test includes data the model **does not** describe: trajectories
+generated from L6's exponential/softmax kernel, where no true γ exists.
+The estimator must detect this rather than confidently reporting a value.
+
+Detection is **threshold-free by construction** — the one design change
+that would have saved H5. Rather than testing R² against an arbitrary
+bar, the estimator fits *both* candidate kernels (log p ~ log C for
+power-law, log p ~ C for exponential) and reports which wins. Model
+selection replaces a hand-picked constant, so there is no number for me
+to have guessed badly.
+
+## Pre-registration (written before `t7_estimator.py` existed)
+
+- **P1 (recovery):** recover γ to within ±0.10 for true γ ∈ {0.4, 0.6,
+  0.8, 1.0, 1.2, 1.4, 1.6, 1.8}, from noiseless transient data.
+- **P2 (noise tolerance):** within ±0.20 at 5% multiplicative
+  observation noise.
+- **P3 (misspecification, threshold-free):** on power-law data
+  R²_power > R²_exp; on exponential-kernel data R²_exp > R²_power. The
+  estimator must correctly identify the generating kernel in both
+  directions.
+- **P4 (stability under analyst choices — the H5 lesson):** γ̂ must not
+  depend on choices I make without noticing. Sweep sampling interval,
+  transient window, and channel subset; the **spread of γ̂ across those
+  choices must be < 0.15**, and this is reported alongside every point
+  estimate rather than a single hand-picked configuration.
+
+**Kill conditions:** P1 or P2 exceeding tolerance; P3 misidentifying the
+kernel in either direction; or P4 spread ≥ 0.15, which would mean the
+estimate is an artifact of analyst choice exactly as H5's was.
+
+**Known predicted limitation** (recorded in advance, not a get-out): in
+the deep distributed phase all C_i converge to 1/N, so log C_i loses
+variance and the regression degenerates. The estimator should be
+*least* reliable exactly where structure is most uniform. If P1 fails,
+I predict it fails at low γ for this reason.
+
+**Result — FAILED (2 of 4 kill conditions fired).**
+
+```
+P1 recovery, noiseless:   worst error 0.024  -> PASS
+   (0.400/0.600/0.800/1.000/1.200/1.400/1.604/1.824 for true
+    0.4...1.8 -- exact to 3 decimals below gamma=1.6)
+P2 noise 5%:              worst error 0.739  -> FAIL
+P3 kernel identification: both directions    -> PASS
+P4 stability spread:      worst 1.943        -> FAIL
+```
+
+**P1 and P3 passed cleanly.** Recovery from clean data is essentially
+exact, and the threshold-free kernel test correctly identified power-law
+data as power-law (R² 1.0000 vs 0.7715) and exponential data as
+exponential (0.9889 vs 0.7899) — the design change made specifically to
+avoid H5's hand-picked-constant failure worked, in both directions.
+
+**P2 and P4 failed, and they fail together, at high γ.** Noise error
+climbs monotonically with γ (0.026 at γ=1.0 → 0.739 at γ=1.8), and the
+stability spread across analyst choices explodes from 0.000 at γ=1.0 to
+**1.943** at γ=1.4 — larger than the parameter being estimated.
+
+**My predicted failure mode was wrong, and instructively so.** I
+pre-registered that if P1 failed it would fail at *low* γ, where
+uniformity destroys regressor variance. Instead the estimator is
+flawless at low γ and disintegrates at *high* γ. The mechanism is the
+opposite end of the same coin: concentration drives the losing channels
+toward zero, where p_i = (dC_i/dt + βC_i)/(αF) becomes a small
+difference of small noisy numbers. **Concentration destroys the
+estimator by starving the losers of signal, not by starving the winners
+of variance.** Recorded as a wrong prediction, not folded into the
+result.
+
+**Methodological note worth keeping.** P1 alone would have read as a
+triumph — errors of 0.000. P4 exists only because H5 was killed for
+never sweeping its own analyst choices, and P4 immediately caught a
+real instability that P1 concealed. The lesson transferred and paid for
+itself on its first use.
+
+## T7b pre-registration — compositional weighting (repair #1)
+
+The failure is heteroscedasticity, not bias: the routing shares p_i are
+**compositional data**, whose log-residual variance scales roughly as
+1/p. The unweighted regression therefore gives near-zero-share channels
+— the noisiest — equal leverage to the informative ones. The standard
+treatment for share data is quasi-likelihood weighting by the share
+magnitude, which is derived from the data type rather than from the
+answer, and requires no knowledge of γ.
+
+Repair: weight each centered residual by p_i (weighted least squares
+through the origin), leaving everything else untouched.
+
+**Predictions:** P2 worst error ≤ 0.20; P4 worst spread < 0.15; and P1
+must not regress beyond its existing 0.10 tolerance.
+**Kill:** any of the three unmet. Under the carried stopping rule a
+second failed repair ends work on the estimator, no third attempt.
+
+**T7b result:** _pending._
