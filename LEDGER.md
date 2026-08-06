@@ -706,6 +706,79 @@ as a genuine failure"). The attribution to measurement resolution was
 falsifiable and survived its own test. P1's original FAIL stands as
 recorded; what is now established is *why* it failed.
 
+## T4 adversary verdict — **KILLED(vacuous)**, and correctly
+
+The adversarial review of `t6_microgrid.py` killed P1. I verified its
+central claim independently before accepting, and it holds exactly:
+
+    gamma=0.60  max|offered - accepted| = 6.9e-18
+    gamma=1.00  max|offered - accepted| = 0.0
+    gamma=1.10  max|offered - accepted| = 1.4e-17   <- top of the kill window
+    gamma=1.20  max|offered - accepted| = 1.3e-04   <- physics first engages here
+
+**The taper is exactly inert across the whole pre-registered [0.9, 1.1]
+window.** In the distributed regime each cell is offered ~F/N = 0.05
+against headroom ~0.475 — a 10× margin — so the physics branch executes
+a bit-identical trajectory to the no-physics control until concentration
+is already well underway. P1 asked "does the threshold survive the
+physics?" but at these parameters the physics is not present at the
+threshold. **The test could not have come out any other way. That is
+vacuity, and it is the third time in this session the same failure mode
+has been caught — twice by adversaries in the foundry, now once more
+here, in the test I explicitly wrote an anti-vacuity statement for.**
+Writing the warning did not save me from the error.
+
+Consequences accepted:
+- **P1 is withdrawn**, not downgraded. "The γ=1 threshold survives real
+  charging physics" is not supported by this experiment.
+- My **instrument-bias explanation was over-claimed**. The identical
+  1.149 readings are largely a consequence of the two arms *being the
+  same computation* up to γ=1.10, not independent confirmation of a
+  shared measurement artifact. (T6c's convergence to 1.025 does still
+  independently establish the finite-time part — and the adversary,
+  reading the ledger before T6c finished, predicted exactly that the
+  reading would move. It did. That prediction of theirs was correct.)
+- The adversary's point 4 — that N_eff at t=1000 near γ≈1.15 is a
+  mid-collapse snapshot, not a steady state — is **correct and was
+  independently confirmed by T6c**.
+- No bug in the redistribution loop; charge conserves to ~1e-13.
+
+## T6e pre-registration — L7 predicts the adversary's own counterexample
+
+The adversary's strongest evidence was that at I_cap=0.05 the transition
+**vanishes entirely** (N_eff = 20 for all γ ∈ [0.6, 1.6]), which they
+offered as proof the P1 result is parameter-contingent. They are right
+that it is. But that counterexample is not unexplained — **L7 predicts
+it**, and predicts precisely where it must occur.
+
+L7 gives a floor of 21.0 at I_cap=0.05. Since a floor above N is
+unreachable, N_eff can never fall below N=20 — no concentration is
+possible. Setting L7's floor equal to N gives a sharp regime boundary:
+
+    **I_cap\* = 1/(N−1) = 0.0526 for N=20**
+
+Above it the taper is dormant pre-critically and concentration proceeds;
+below it the taper binds even in the uniform state and concentration is
+impossible. There is no intermediate regime where the taper *modulates*
+the transition — which is the real reason P1 could never have detected a
+shift, and a sharper structural statement than P1 was even asking for.
+
+**Pre-registered predictions** (γ=1.6, T=4000, straddling the boundary):
+
+| I_cap | L7 floor | prediction |
+|---|---|---|
+| 0.04 | 26.00 | N_eff = 20.0 (no concentration) |
+| 0.05 | 21.00 | N_eff = 20.0 (no concentration) |
+| 0.06 | 17.89 | N_eff ≈ 17.89 |
+| 0.08 | 13.75 | N_eff ≈ 13.75 |
+
+**Kill condition:** concentration appearing below the boundary, absent
+above it, or either measured floor deviating >3% from L7. This is
+repair-free — L7 is unmodified; only a consequence of it is being
+tested, on parameters chosen by a hostile reviewer to break the work.
+
+**T6e result:** _pending._
+
 ## T4/T6 tier summary
 
 - **P1** failed as written (1.149 vs a [0.9,1.1] window) — my
