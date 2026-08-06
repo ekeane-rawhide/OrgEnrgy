@@ -138,4 +138,77 @@ medium is M=128 non-interacting sites, i.e. the fixed-N model with
 N=128 wearing a spatial costume — and L7 already predicts N_eff there
 regardless of N. So C2's success in the small-D limit may be trivial,
 and the honest test of anything new is the D-dependence, which is where
-it broke. Going to the adversary now.
+it broke.
+
+---
+
+# H4 ADVERSARY VERDICT — **KILLED(vacuous)**, on three independent axes
+
+Every specific claim independently verified before acceptance:
+
+**1. The vacuity is a fact, not a risk.** At D=1e-4 — the value used for
+the entire headline C2 table — the diffusion length is
+√(D·T) = **0.45 grid cells**, i.e. sub-cell. Running at D=0.0 exactly
+gives N_eff=5.0000 vs 5.0327 at D=1e-4: indistinguishable. The regime
+where C2 "passes strongly" *is* the D→0 limit, where `allocate()` is a
+verbatim copy of `t6_microgrid.py`'s. **C2 was a restatement of T6d/T6e
+with a spatial index that does no work.** I called this a risk; the
+numbers make it the finding.
+
+**2. `count_peaks()` is broken, and my C1 "marginal fail" was its bug,
+not a result.** Verified directly — at I_cap=0.10 all three seeds have
+**exactly 11 winners**, zero variance, exactly L7's prediction:
+
+    seed 0: 11 winners, 2 ring-adjacent pairs -> reported 9
+    seed 1: 11 winners, 1 ring-adjacent pair  -> reported 10
+    seed 2: 11 winners, 0 ring-adjacent pairs -> reported 11
+
+`peaks = winners − adjacent_pairs`, deterministically. The detector
+merges two winners whenever they land on neighbouring ring indices — a
+birthday-paradox coincidence with no dynamical meaning, since at D≈0
+ring position plays no role in a globally-normalised competition. **The
+one place I reported instability was my own counter failing.**
+
+**3. The C3 collapse is real and is the named prior art.** The D=1e-2
+field is a genuine contiguous mesa, a true diffusive merger — textbook
+**Ostwald ripening / coarsening in nonlocal reaction-diffusion**
+(Mimura–Murray competition-diffusion, Ward & Wei spike-merging in
+Gierer–Meinhardt, Cahn–Hilliard coalescence). The allocator itself is
+separately nameable as **competitive exclusion** from theoretical
+ecology (MacArthur consumer-resource, Tilman resource-ratio: coexisting
+species bounded by number of limiting constraints).
+
+The adversary's summary of the trap is exact: there is no regime where
+(a) diffusion does real work, (b) the count-measurement is sound, and
+(c) L7 predicts something not already known — simultaneously. Every
+regime fails at least one.
+
+## Meta-experiment result
+
+Pre-registered before running: Round 1 died to **algebra**; I predicted
+Round 2 would die to **pattern formation**. It did — coarsening,
+Cahn–Hilliard, Gierer–Meinhardt, plus competitive exclusion from
+ecology. A different family entirely.
+
+**So the strategy change did move the search.** Changing the generation
+strategy from "compositional substrate" to "no fixed parts" relocated
+the hypothesis to a different region of idea-space, and the relocation
+was predicted in advance rather than observed after. "Generate
+differently" is therefore a controllable variable, not wishful thinking.
+
+That is a real result about idea generation — and it is also the *only*
+thing Round 2 produced. The hypothesis itself is as dead as the first
+three, and the adversary is right that a correct kill-prediction is
+evidence about my calibration, not evidence for H4.
+
+**Foundry standing: 0 for 4.** Every hypothesis generated from instinct,
+under two deliberately different generation strategies, has reduced to
+named prior art. The one durable law this session produced (L7) came
+from the boring pre-registered experiment, not the foundry.
+
+## One thing H4 did establish, negatively
+
+L7 governs **how much**, never **how many**. The count was smuggled in
+by the diffusion term; the deposition/decay law does not deliver
+individuation. That is a genuine boundary on L7's scope, obtained the
+only way boundaries are reliably obtained here — by failing.
