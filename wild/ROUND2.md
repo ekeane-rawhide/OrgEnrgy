@@ -88,3 +88,54 @@ is deeper than where I chose to look. If it survives, that is a result
 requiring physical follow-up before any claim.
 
 Recorded before running, and not shown to the adversary.
+
+---
+
+# H4 RESULTS
+
+```
+ I_cap  L7 pred   peaks(3 seeds)   N_eff   rel err
+  0.50     3.00        [2, 3, 3]    3.02      0.7%
+  0.25     5.00        [4, 5, 5]    5.04      0.8%
+  0.10    11.00      [9, 10, 11]   11.08      0.7%
+
+C3, I_cap=0.25 (L7 predicts 5):
+  D=1e-05  peaks= 4   N_eff=5.00
+  D=1e-04  peaks= 4   N_eff=5.03
+  D=1e-03  peaks= 3   N_eff=5.26
+  D=1e-02  peaks= 1   N_eff=5.84
+```
+
+**The script printed `PASS`. That verdict is wrong and I am overriding
+it.** The script checked only the worst N_eff error against the 10%
+bar; my pre-registration listed four kill conditions and several fired.
+Scoring against what was actually written:
+
+- **C2 (N_eff matches L7): PASSED, strongly.** 3.02/5.04/11.08 against
+  predictions of 3/5/11 — under 1% at every point, and stable.
+- **C1 (reproducible counts): marginal FAIL.** At I_cap=0.10 the peak
+  count spans [9, 10, 11] across seeds — a spread of 2, over the
+  ≤1 bar.
+- **C3 (count independent of D): CLEAR FAIL.** Over a 1000× range in D
+  the peak count collapses 4 → 4 → 3 → **1**, far outside the ±1 bar.
+
+**So the load-bearing individuation claim fails, and the failure is
+informative.** At D=1e-2 the field has *one* local maximum but an N_eff
+of 5.84 — the mass is still distributed as L7 says, but it is no longer
+organised into discrete countable peaks. The two things come apart:
+
+> **L7 predicts the effective mass distribution robustly. It does not
+> predict discrete countability.** Whether the medium's mass is carved
+> into separable "things" is set by D — a pattern-formation length
+> scale — not by L7.
+
+That is precisely the boundary H4 was built to probe, and the answer is
+that individuation is *not* delivered by the deposition/decay law. The
+count was smuggled in by the diffusion term all along.
+
+**Vacuity risk I should flag before the adversary does:** at D→0 the
+medium is M=128 non-interacting sites, i.e. the fixed-N model with
+N=128 wearing a spatial costume — and L7 already predicts N_eff there
+regardless of N. So C2's success in the small-D limit may be trivial,
+and the honest test of anything new is the D-dependence, which is where
+it broke. Going to the adversary now.
