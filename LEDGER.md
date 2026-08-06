@@ -1066,3 +1066,52 @@ this work I presented as a principled residual finding — the
 identifiability conjecture — was the part that was simply wrong. Honest
 reporting of failure is not the same as correct diagnosis of failure,
 and I have now confused the two.
+
+---
+
+# AUDIT OF SURVIVORS
+
+Every claim still standing goes in front of a dedicated hostile reviewer,
+briefed with the strongest attack I can construct against it. Nothing
+enters `RESULTS.md`'s "survived" section without a named attack it
+withstood.
+
+## A2 — L6 elasticity law: **KILLED(trivial)**
+
+The reviewer confirmed the mathematics is **correct, bug-free, not
+rigged, and in fact more general than I claimed** — then killed it
+anyway, correctly, on novelty.
+
+Named prior art: this is the local stability analysis of the
+**replicator equation** with fitness f (Taylor & Jonker 1978; textbook
+in Hofbauer & Sigmund 1998) — roughly fifty years old. The reviewer
+derived the exact Jacobian by hand and showed the degeneracy on the
+tangent-to-simplex subspace follows from **permutation symmetry alone**
+(Schur's lemma on the S_N action), independent of f; only the scalar
+depends on f, and that scalar is x*f'(x*)/f(x*) by direct substitution.
+"Elasticity" is the economics term d(ln f)/d(ln x) imported unchanged.
+My flagship consequence — power laws are the unique constant-elasticity
+kernels — is the one-line separable ODE x f'/f = γ ⇒ f = Cx^γ, taught in
+intermediate microeconomics.
+
+Three further findings, all fair:
+1. **The test could only certify correct differentiation.** The reviewer
+   verified it is not a pure tautology (injecting a wrong formula
+   2γ_eff−1 does produce disagreement), but both "prediction" and
+   "measurement" are two renderings of the same linearized ODE. It
+   confirms I differentiated correctly and that Euler converges. It
+   probes no independent phenomenon.
+2. **Not rigged — and my presentation was worse than the result.** The
+   reviewer tested sigmoid, shifted-log, power+const, Michaelis–Menten,
+   quadratic and tanh kernels, plus T over a 400× range, and the formula
+   holds everywhere (errors 1e-5 to 9e-3). Its verdict on my narrow
+   0.7×/1.3× window: "unnecessary theater around a result that's
+   actually true globally." I under-tested a correct claim and
+   over-dressed it.
+3. **T\*=1/N has no content beyond substitution.** Setting 1/(NT)=1 and
+   solving. No mechanism, no scaling law.
+
+**Accepted without repair.** L6 moves to a new category the record
+needs: **true, general, correctly implemented — and not a discovery.**
+Its verdict quote is worth keeping: *"No amount of correct execution
+turns a textbook computation into a discovery."*
