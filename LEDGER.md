@@ -378,4 +378,76 @@ The adversary also found two things I did NOT plant:
 full strength — it found the planted kill *and* two unplanted flaws.
 H1/H3 adversary verdicts can now be taken seriously.
 
+## H3 adversary verdict
+
+**VERDICT: KILLED(reduction)** — the pre-registered prediction landed
+exactly, and the adversary went further than my own self-test did.
+
+Named prior art from its report: **LRFU** (Lee et al., 1999/2001 — the
+CRF score Σ F(t−t_k) with F(x)=(1/2)^(λx) is "the identical
+exponential-decay accumulate-on-access score, differing only by
+re-basing," 1−β = 2^(−λ)); **TD(λ) eligibility traces** (Sutton & Barto
+— same first-order linear recursion, decades older); **EWMA / Jacobson's
+RTT estimator**; and the deployed aging family (Redis approximate-LFU
+decay counters, Squid cache aging, Window-TinyLFU periodic halving).
+Its summary of my C2 self-test: "I'm just cashing that check" — C2 was
+algebra, not an empirical test; it could never have failed.
+
+Additional unplanted kill: **C1's baseline was rigged**. Pure
+never-decaying LFU is a known-pathological strawman under drift — every
+real deployed LFU variant (Redis, Caffeine, LFU-Aging) includes decay or
+windowing precisely because this failure mode has been documented for
+decades. A fair baseline (LRFU itself, sliding-window counts) would
+likely erase most of the +7.7-point gap, since it would then be two
+decay schemes differing in detail. The numbers were real; the comparison
+was against an opponent nobody would deploy.
+
+Verdict accepted without repair attempt: both kills are independently
+fatal and the reduction was pre-registered as the likely outcome.
+
+## H1 adversary verdict
+
+**VERDICT: KILLED(reduction)** — the predicted kill (groupoid + linear
+logic) landed, plus three more named reductions and a rigged test I
+wrote without noticing.
+
+Axiom-by-axiom decode from its report: differences = morphisms in a
+category (Yoneda-style relationalism); fusion = categorical composition
+with **linear logic** (Girard 1987) consumption semantics — also **Petri
+net** token flow (1962); destructive read = linear elimination /
+projective quantum measurement; axiom 4 is "word-for-word the
+**no-cloning theorem** (Wootters & Zurek 1982; Dieks 1982)"; free
+inversion = the **groupoid** axiom (Brandt 1927), and the full package
+(invertible + uncopyable + destructive read) is the standard structure
+of **categorical quantum mechanics** (Abramsky & Coecke dagger-compact
+categories). C3's headline claim — no fan-out ⇒ sub-universal — "is
+precisely why Girard introduced the ! modality": the
+multiplicative-only fragment of linear logic has been known to be
+sub-universal on exactly this point for ~40 years. The predicted
+capability (uncloneable tokens without cryptography) is the standard
+pitch for **Wiesner's quantum money** (~1970/1983) and for linear-type
+systems (Rust ownership, uniqueness typing).
+
+Unplanted find: my `test_c3_no_fanout` was **vacuous** — it repeats the
+C1 double-read test under a new name and asserts a hard-coded True
+(`single_output` comes from a comprehension that cannot produce False
+for any implementation, correct or broken). It cannot fail, tests
+nothing about fan-out, and I did not notice when writing it. The
+adversary is right that a real C3 test would need to show no combination
+of mint/fuse/invert/read builds AND(x,x) — an argument I made in prose
+only.
+
+Verdict accepted without repair attempt.
+
+## Foundry final tally
+
+H1: KILLED(reduction) — linear logic + groupoids + no-cloning + quantum
+money. H2: KILLED(reduction) — race logic + diode logic + tropical
+semirings (calibration corpse, executed as designed). H3:
+KILLED(reduction) — LRFU + eligibility traces + EWMA aging.
+Three for three, all landing on the pre-registered predictions, plus
+four unplanted flaws found (one false theorem statement, one scoped
+search, one rigged baseline, one vacuous test). Full accounting and
+what this measures in `wild/VERDICT.md`.
+
 ---
