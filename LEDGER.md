@@ -1173,3 +1173,51 @@ much smaller thing than what I claimed and what I defended.
 adversary's own counterexample" is now much weaker than presented. Both
 prediction and counterexample live inside the same forced-identity box,
 so that agreement was structural too.
+
+## A3 — resilience 3.13×: **KILLED(trivial)**, and the effect inverts
+
+Verified independently. This kills the session's central hypothesis.
+
+**Kill 1 — adaptation is worse than a naive constant.** The decisive
+test I should have run and never did: compare adaptive-γ against a
+*fixed* γ set to the adaptive schedule's own **time-averaged** γ (1.1352
+over the 0–60 window my own AUC metric integrates). Result, all 6 seeds,
+no overlap with 1.0:
+
+```
+seed 0  adaptive 68.02  fixed@1.1352 89.42  ratio 0.761
+seed 1  adaptive 66.90  fixed@1.1352 84.82  ratio 0.789
+seed 2  adaptive 66.66  fixed@1.1352 84.22  ratio 0.791
+seed 3  adaptive 66.98  fixed@1.1352 85.22  ratio 0.786
+seed 4  adaptive 67.34  fixed@1.1352 86.66  ratio 0.777
+seed 5  adaptive 68.30  fixed@1.1352 90.50  ratio 0.755
+mean 0.776  ->  adaptation UNDERPERFORMS by ~22%
+```
+
+**A constant policy carrying the same average γ beats the adaptive
+controller outright.** The mechanism is my own L1/L3 result used against
+me: relaxation rate is β(γ−1), so time spent at γ=1.4 destroys far more
+than time at γ=0.6 buys. Averaging γ and averaging *dynamics* are not
+the same operation in a nonlinear system, and a steady moderately-
+supercritical γ smooths what the swing does not. There is no sense in
+which the tested adaptive schedule does something a naive constant
+cannot.
+
+**Kill 2 — independently fatal.** The 3.13× is an affine readout of one
+unswept, author-chosen constant. Sweeping `stress_duration` 5→60 moves
+the ratio **1.50× → 7.42×**, because the fixed control never reads that
+parameter (its collapse time is pinned at 22.26) while the adaptive
+time-to-danger scales linearly with it at ≈2.32 per unit. **3.13× is
+simply where 20 happens to land on that line.** I could have reported
+almost any number by choosing a different stress window. My ledger
+caveat ("this is one point, not a curve") was true and radically
+undersold how load-bearing that point was.
+
+**Kill 3 — the baseline was the strawman I had already learned to
+recognise.** Fixed γ=1.4 held through a known failure is precisely the
+class of comparator H3 died for. I recorded that lesson, quoted it, and
+then failed to apply it one tier away in my own work.
+
+**Accepted, no repair.** The resilience payoff — the entire empirical
+case for self-tuning criticality, and the reason the adaptive-γ formula
+was worth proposing — is withdrawn.
