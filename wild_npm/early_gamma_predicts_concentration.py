@@ -32,7 +32,7 @@ import math
 from categories import CATEGORIES
 from kernel_choice_model import load_choice_events, mean_ll, golden_section_max, competitor_first_seen
 
-def fit_gamma_window(cat, frac, first_seen):
+def fit_gamma_window(cat, frac, first_seen, min_events=30):
     events = load_choice_events(cat, multi_choice="exclude")
     if not events:
         return None
@@ -43,7 +43,7 @@ def fit_gamma_window(cat, frac, first_seen):
     span = dates_to_days(dmax) - dates_to_days(dmin)
     cutoff_day = dates_to_days(dmin) + frac * span
     early = [e for e in events if dates_to_days(e[0]) <= cutoff_day]
-    if len(early) < 30:
+    if len(early) < min_events:
         return None
 
     def obj(g):
@@ -105,12 +105,14 @@ def spearman(xs, ys):
     return 1 - 6 * d2 / (n * (n ** 2 - 1)) if n > 1 else None
 
 if __name__ == "__main__":
+    import sys
+    min_events = int(sys.argv[1]) if len(sys.argv) > 1 else 30
     results = {}
     for frac in (0.3, 0.4, 0.5):
         row = {}
         for cat in CATEGORIES:
             first_seen = competitor_first_seen(cat)
-            g = fit_gamma_window(cat, frac, first_seen)
+            g = fit_gamma_window(cat, frac, first_seen, min_events=min_events)
             h = final_hhi(cat)
             if g and h:
                 row[cat] = {**g, **h}

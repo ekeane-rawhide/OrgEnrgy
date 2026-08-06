@@ -128,3 +128,90 @@ actually conserved, which is what the model requires.
 **Cost:** requires crawling many dependent packages (~0.1–1 MB each) to
 reconstruct which library each depended on at each date. Not free, but
 tractable, and it is the honest next step rather than a claim.
+
+---
+
+## Real-data test: npm dependency adoption (first test on data the model
+## did not generate)
+
+Full pipeline in `wild_npm/`. 10 pre-registered categories (HTTP clients,
+test runners, date libraries, state management, bundlers, promise utils,
+logging, templating, validation, UUID generators, CLI arg parsers),
+~2,000 real dependent packages found via a broad, category-agnostic
+sampling frame (no reverse-dependency API is reachable from this
+environment — confirmed by probing `api.deps.dev`, `npms.io`,
+`packages.ecosyste.ms`, `www.npmjs.com/browse/depended`, all 403 at the
+proxy — so the candidate pool was built from 20 generic search terms
+unrelated to any category, then filtered to packages that actually
+depend on a category member).
+
+**Step 1 feasibility (passed):** 367 qualifying HTTP-client dependents,
+82 showing genuine version-to-version switching — real flow, not a
+static snapshot. All 10 categories cleared a pre-registered 15-dependent
+threshold (range 41–378 qualifying, 2–52 switchers).
+
+**Kernel fit, first attempt — KILLED(identity):** regressed
+`log(p_i/p_j)` on `log(C_i/C_j)` where `p_i := C_i/total`. This is an
+algebraic identity (`p_i/p_j = C_i/C_j` for any data whatsoever), not a
+measurement — it returned R²=1.0, γ=1.0 exactly in all 10 categories.
+Same failure mode as L7, caught this time from the inside before being
+reported as a finding. Dead file kept at `wild_npm/fit_kernel.py` as the
+record.
+
+**Kernel fit, redesigned — real signal, but weaker than first measured:**
+`wild_npm/kernel_choice_model.py` fits a genuine discrete-choice
+(conditional logit) model: for each dependency-choice event, does
+P(choice=i | pre-event standing counts) fit better as a power law
+(`C_i^γ`) or exponential (`exp(γ·C_i)`) kernel, against a uniform-choice
+baseline? First run showed power law winning 8/10 categories, stable
+across an eps/multi-choice sweep — but a **second self-audit pass** (the
+mandatory adversarial subagent failed on an API spend limit, so this was
+done by hand) found 99.5% of the "choice events" in `http_client` were
+redundant: a package republishing its 40th version with an unchanged
+dependency isn't a fresh decision, and counting it as one inflated the
+sample ~200× with autocorrelated repeats of whatever a package already
+happened to pick. **Refit on genuine decisions only** (a package's first
+recorded choice, plus true switches): pseudo-R² dropped substantially
+(e.g. uuid_gen 0.65→0.51, http_client 0.31→0.21) and one category
+(templating) flipped from power-law to exponential winner. Corrected
+result: power law wins 8/11 categories robustly across the sweep,
+exponential wins 2/11 robustly, 1/11 (promise_utils) is genuinely
+ambiguous (flips with eps). Verdict: **survived, weaker than first
+measured** — real signal, not an identity, but smaller and less uniform
+than the uncorrected run suggested.
+
+**The core test — KILLED (or at best fragile/underpowered):** does γ
+fit on only the early window of a category's history predict its later
+concentration (HHI)? Pre-registered prediction: positive Spearman
+correlation, sign stated in advance, three window fractions (0.3/0.4/0.5)
+swept.
+
+- On the (buggy) event-inflated data: ρ = 0.08 / 0.16 / 0.22 across the
+  three fractions — correct sign, t = 0.25–0.67 against a critical value
+  of ~2.26 at df=9. Nowhere near significant at any window choice.
+- After the decisions-only fix, with a minimum-early-events threshold
+  swept (10/15/20/30) because the corrected event counts are much
+  smaller: correlation becomes unstable and threshold-dependent (ρ
+  ranges 0.19–1.0 depending on which categories have enough early data
+  to even enter the sample — N itself varies from 2 to 11 depending on
+  the threshold). At the one setting with a full, consistent N=11 across
+  all three fractions (min_events=10), ρ = 0.32 / 0.52 / 0.75 — only the
+  frac=0.5 point reaches nominal significance (t=3.45, df=9), and
+  frac=0.5 is **half of the total observed history**, i.e. the one
+  setting that overlaps most with the outcome period it's supposedly
+  predicting. The genuinely early windows (0.3, 0.4) are not
+  significant. This is the signature of within-sample overlap dressed
+  up as prediction, not real early-warning power.
+
+**Verdict: KILLED / no robust out-of-sample predictive power detected.**
+With only 10–11 categories, this is also a weak test by construction —
+"underpowered" and "killed" are not fully separable at this N — but the
+one condition under which significance appears is precisely the one that
+should be most suspicious, not most trusted. Reported per the
+pre-registered kill condition: report plainly, do not lower the bar to
+manufacture a pass.
+
+This is the first test in this repository's history run against data
+the model did not generate. It clears the precondition the falsify skill
+opens with ("can this test return an answer I did not put there?") —
+and the answer that came back was no detectable predictive signal.

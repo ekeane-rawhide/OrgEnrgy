@@ -61,10 +61,22 @@ def competitor_first_seen(cat):
         out[c] = min(dates) if dates else None
     return out
 
-def load_choice_events(cat, multi_choice="exclude"):
+def load_choice_events(cat, multi_choice="exclude", decisions_only=True):
     """Returns list of (date, pre_state_dict, outcome) where outcome is
     either a single competitor name (exclude mode) or a list of equally
-    weighted competitors (split mode)."""
+    weighted competitors (split mode).
+
+    decisions_only=True (the honest default, found necessary in the
+    adversarial pass): a package that republishes a new version without
+    changing its chosen competitor is NOT a fresh decision -- counting
+    it as one inflated the raw event stream ~200x with autocorrelated
+    repeats of whichever competitor a package already happened to pick,
+    which can manufacture apparent preferential-attachment signal for
+    free (large C_i attracts more already-settled packages who keep
+    republishing, regardless of any real attachment mechanism). Only
+    a package's FIRST recorded choice and genuine SWITCHES (chosen set
+    differs from the immediately preceding one for that package) count
+    as decision events."""
     series = json.load(open(f"series_{cat}.json"))
     events = []
     for pkg, s in series.items():
@@ -78,10 +90,12 @@ def load_choice_events(cat, multi_choice="exclude"):
     out = []
     for date, pkg, chosen in events:
         pre_state = {c: counts[c] for c in competitors}
-        if len(chosen) == 1:
-            out.append((date, pre_state, [chosen[0]]))
-        elif multi_choice == "split":
-            out.append((date, pre_state, chosen))
+        is_decision = (pkg not in current) or (set(current[pkg]) != set(chosen))
+        if not decisions_only or is_decision:
+            if len(chosen) == 1:
+                out.append((date, pre_state, [chosen[0]]))
+            elif multi_choice == "split":
+                out.append((date, pre_state, chosen))
         # else exclude ambiguous multi-choice events from the fit
 
         if pkg in current:

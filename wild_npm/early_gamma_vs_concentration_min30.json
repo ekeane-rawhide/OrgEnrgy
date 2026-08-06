@@ -1,0 +1,164 @@
+{
+ "0.3": {
+  "per_category": {
+   "promise_utils": {
+    "gamma_early": 0.8795731004963163,
+    "n_early_events": 56,
+    "cutoff": "2016-06-14",
+    "hhi": 0.43704865536058557,
+    "n_competitors_active": 5,
+    "total_slots": 101.0
+   },
+   "cli_args": {
+    "gamma_early": 0.42468630341389024,
+    "n_early_events": 48,
+    "cutoff": "2016-02-19",
+    "hhi": 0.32023879510652004,
+    "n_competitors_active": 5,
+    "total_slots": 377.99999999999994
+   }
+  },
+  "spearman_rho": 1.0,
+  "n_categories": 2
+ },
+ "0.4": {
+  "per_category": {
+   "http_client": {
+    "gamma_early": 0.5979087431749853,
+    "n_early_events": 63,
+    "cutoff": "2017-11-20",
+    "hhi": 0.22249280441114963,
+    "n_competitors_active": 10,
+    "total_slots": 367.0
+   },
+   "bundler": {
+    "gamma_early": 1.2158357686145198,
+    "n_early_events": 32,
+    "cutoff": "2018-01-16",
+    "hhi": 0.3767020408163267,
+    "n_competitors_active": 4,
+    "total_slots": 175.0
+   },
+   "promise_utils": {
+    "gamma_early": 0.9080428914477299,
+    "n_early_events": 78,
+    "cutoff": "2017-07-14",
+    "hhi": 0.43704865536058557,
+    "n_competitors_active": 5,
+    "total_slots": 101.0
+   },
+   "logging": {
+    "gamma_early": 0.3467910200656146,
+    "n_early_events": 31,
+    "cutoff": "2017-09-12",
+    "hhi": 0.30236027492141293,
+    "n_competitors_active": 5,
+    "total_slots": 137.0
+   },
+   "validation": {
+    "gamma_early": 0.9157204063497284,
+    "n_early_events": 34,
+    "cutoff": "2019-10-10",
+    "hhi": 0.43802466979163635,
+    "n_competitors_active": 6,
+    "total_slots": 321.0
+   },
+   "uuid_gen": {
+    "gamma_early": 0.9717032793202988,
+    "n_early_events": 44,
+    "cutoff": "2018-12-29",
+    "hhi": 0.6588854262850109,
+    "n_competitors_active": 5,
+    "total_slots": 228.0
+   },
+   "cli_args": {
+    "gamma_early": 0.6862506657726553,
+    "n_early_events": 106,
+    "cutoff": "2017-08-18",
+    "hhi": 0.32023879510652004,
+    "n_competitors_active": 5,
+    "total_slots": 377.99999999999994
+   }
+  },
+  "spearman_rho": 0.75,
+  "n_categories": 7
+ },
+ "0.5": {
+  "per_category": {
+   "http_client": {
+    "gamma_early": 0.6340560490283973,
+    "n_early_events": 110,
+    "cutoff": "2019-05-03",
+    "hhi": 0.22249280441114963,
+    "n_competitors_active": 10,
+    "total_slots": 367.0
+   },
+   "date_library": {
+    "gamma_early": 0.7221335437806597,
+    "n_early_events": 31,
+    "cutoff": "2019-08-02",
+    "hhi": 0.3013635215890918,
+    "n_competitors_active": 4,
+    "total_slots": 109.0
+   },
+   "bundler": {
+    "gamma_early": 1.131383104692536,
+    "n_early_events": 55,
+    "cutoff": "2019-06-21",
+    "hhi": 0.3767020408163267,
+    "n_competitors_active": 4,
+    "total_slots": 175.0
+   },
+   "promise_utils": {
+    "gamma_early": 0.9527234186860231,
+    "n_early_events": 94,
+    "cutoff": "2018-08-13",
+    "hhi": 0.43704865536058557,
+    "n_competitors_active": 5,
+    "total_slots": 101.0
+   },
+   "logging": {
+    "gamma_early": 0.49085138778844734,
+    "n_early_events": 43,
+    "cutoff": "2019-02-28",
+    "hhi": 0.30236027492141293,
+    "n_competitors_active": 5,
+    "total_slots": 137.0
+   },
+   "templating": {
+    "gamma_early": 0.38656315674930514,
+    "n_early_events": 32,
+    "cutoff": "2020-01-14",
+    "hhi": 0.2642660369933098,
+    "n_competitors_active": 6,
+    "total_slots": 77.0
+   },
+   "validation": {
+    "gamma_early": 0.863097936364029,
+    "n_early_events": 56,
+    "cutoff": "2020-11-28",
+    "hhi": 0.43802466979163635,
+    "n_competitors_active": 6,
+    "total_slots": 321.0
+   },
+   "uuid_gen": {
+    "gamma_early": 1.0064660230000126,
+    "n_early_events": 76,
+    "cutoff": "2020-03-26",
+    "hhi": 0.6588854262850109,
+    "n_competitors_active": 5,
+    "total_slots": 228.0
+   },
+   "cli_args": {
+    "gamma_early": 0.6094755167526701,
+    "n_early_events": 161,
+    "cutoff": "2019-02-15",
+    "hhi": 0.32023879510652004,
+    "n_competitors_active": 5,
+    "total_slots": 377.99999999999994
+   }
+  },
+  "spearman_rho": 0.7,
+  "n_categories": 9
+ }
+}
